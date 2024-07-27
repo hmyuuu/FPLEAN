@@ -42,16 +42,16 @@ def fastBirds : List String := [
 
 #eval firstThirdFifthSeventh (fun xs i => xs[i]?) fastBirds
 
--- Practice 1.3.1
+-- Exercises 1.3.1
 def joinStringsWith (m : String) (f : String) (l : String) : String :=
   f ++ " " ++ m ++ " " ++ l
 
 #eval joinStringsWith ", " "one" "and another"
 
--- Practice 1.3.2
+-- Exercises 1.3.2
 #check joinStringsWith ":"
 
--- Practice 1.3.3
+-- Exercises 1.3.3
 def volum (h : Nat) (w : Nat) (d : Nat) : Nat :=
   h * w * d
 
@@ -100,18 +100,18 @@ deriving Repr
 def Point.modifyBoth (f : Float → Float) (p : Point) : Point :=
   { x := f p.x, y := f p.y }
 
--- Practice 1.4.1
+-- Exercises 1.4.1
 structure RectangularPrism where
   x : Float
   y : Float
   z : Float
 deriving Repr
 
--- Practice 1.4.2
+-- Exercises 1.4.2
 def volume (p : RectangularPrism) : Float :=
   p.x * p.y * p.z
 
--- Practice 1.4.3
+-- Exercises 1.4.3
 structure Segment where
   start_point : Point
   end_point : Point
@@ -120,12 +120,12 @@ deriving Repr
 def length (s : Segment) : Float :=
   distance s.start_point s.end_point
 
--- Practice 1.4.4
+-- Exercises 1.4.4
 #check RectangularPrism.x
 #check RectangularPrism.y
 #check RectangularPrism.z
 
--- Practice 1.4.5
+-- Exercises 1.4.5
 structure Hamster where
   name : String
   fluffy : Bool
@@ -257,6 +257,45 @@ def mylengthP {α : Type} (xs : List α) : Nat :=
 -- Built-In Datatypes
 -- Option
 
-induction myOption (α : Type) : Type where
+inductive myOption (α : Type) : Type where
   | none : myOption α
   | some (val : α) : myOption α
+
+-- `Option`s in Lean allow multiple players of optionality
+
+def List.myhead {α : Type} (xs : List α) : Option α :=
+  match xs with
+  | [] => none
+  | x :: _ => some x
+
+#check List.head?
+#check List.head!
+#check List.headD
+
+#eval primesUnder10.head?
+#eval [].head? (α := Int)
+#eval ([] : List Int).head?
+
+-- Prod
+
+-- Sum
+
+-- Unit
+
+-- Empty
+
+-- Exercises 1.6.1
+
+-- Exercises 1.6.2
+
+-- Exercises 1.6.3
+
+-- Exercises 1.6.4
+
+-- Exercises 1.6.5
+
+-- Exercises 1.6.6
+
+-- Exercises 1.6.7
+
+-- Exercises 1.6.8
