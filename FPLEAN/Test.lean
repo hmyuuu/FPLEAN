@@ -277,14 +277,57 @@ def List.myhead {α : Type} (xs : List α) : Option α :=
 #eval ([] : List Int).head?
 
 -- Prod
+structure myProd (α : Type) (β : Type) : Type where
+  fst : α
+  snd : β
+
+def fives : String × Int := { fst := "five", snd := 5}
+-- def fives : String × Int := { "five", 5}
 
 -- Sum
+inductive mySum (α : Type) (β : Type) : Type where
+  | inl : α → mySum α β -- left injection
+  | inr : β → mySum α β -- right injection
+
+def PetName : Type := String ⊕ String
+
+def hajimii : List PetName :=
+  [Sum.inl "Sopt", Sum.inr "Tiger", Sum.inl "Fifi", Sum.inl "Rex", Sum.inr "Floof"]
+
+def howManyDogs (pets : List PetName) : Nat :=
+  match pets with
+  | [] => 0
+  | Sum.inl _ :: morePets => howManyDogs morePets + 1
+  | Sum.inr _ :: morePets => howManyDogs morePets
+
+#eval howManyDogs hajimii
 
 -- Unit
+inductive myUnit : Type where
+  | unit : myUnit
+-- used as a placeholder for missing data
+
+inductive ArithExpr (ann : Type) : Type where
+  | int : ann → Int → ArithExpr ann
+  | plus : ann → ArithExpr ann → ArithExpr ann → ArithExpr ann
+  | minus : ann → ArithExpr ann → ArithExpr ann → ArithExpr ann
+  | times : ann → ArithExpr ann → ArithExpr ann → ArithExpr ann
+
+def giveMeAZero (_ : Unit) := 0
+#eval giveMeAZero ()
 
 -- Empty
+#check Empty
 
 -- Exercises 1.6.1
+-- ref:  https://github.com/leanprover/lean4/blob/702c31b8071269f0052fd1e0fb3891a079a655bd/src/Init/Data/List/Basic.lean#L255-L257
+def getLast? (xs : List α) : Option α :=
+  match xs with
+  | [] =>  none
+  | [x] => some x
+  | _ :: ys => getLast? ys
+#eval getLast? primesUnder10
+
 
 -- Exercises 1.6.2
 
