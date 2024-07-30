@@ -328,17 +328,76 @@ def getLast? (xs : List α) : Option α :=
   | _ :: ys => getLast? ys
 #eval getLast? primesUnder10
 
-
 -- Exercises 1.6.2
+def findFirst? {α : Type} (p : α → Bool) : List α → Option α
+  | [] => none
+  | x :: xs => if p x then some x else findFirst? p xs
+#eval findFirst? (fun x => x > 5) primesUnder10
 
 -- Exercises 1.6.3
+-- ref: https://github.com/leanprover-community/mathlib4/blob/ba4821dfe3d90f9c4992fd88b2dd394dc5fbaed8/Mathlib/Data/Prod/Basic.lean#L132-L133
+-- def swap : α × β → β × α := fun p ↦ (p.2, p.1)
+
+def swap {α β : Type} (pair : α × β) : β × α :=
+  (pair.snd, pair.fst)
 
 -- Exercises 1.6.4
+-- inductive myPetName (“🐱” : Type) (🐶 : Type) : Type where
+--   | hajimi : 🐱 → myPetName 🐱 🐶
+--   | hajiwang : 🐶 → myPetName 🐱 🐶
+
+inductive myPetName (α : Type u) (β : Type v)  where
+  | hajimi (val : α) : myPetName α β
+  | hajiwang (val : β) : myPetName α β
+
+-- #TODO: fix this
+-- def myPetNameType : Type := myPetName String String
+-- def pbb : List myPetNameType :=
+--   [myPetName.hajimi "Sopt", myPetName.hajiwang "Tiger", myPetName.hajimi "Fifi", myPetName.hajimi "Rex", myPetName.hajiwang "Floof"]
+-- #eval findFirst? (fun x => match x with | myPetName.hajimi _ => true | _ => false) pbb
 
 -- Exercises 1.6.5
+def zip {α β : Type} : List α → List β → List (α × β)
+  | [], _ => []
+  | _, [] => []
+  | x :: xs, y :: ys => (x, y) :: zip xs ys
+
+def lst1 : List Nat := [1, 2, 3]
+def lst2 : List String := ["one", "two", "three"]
+#eval zip lst1 lst2
+
+-- ref: Array.zipWith
+
+def zipWith {α β γ : Type} (f : α → β → γ) : List α → List β → List γ
+  | [], _ => []
+  | _, [] => []
+  | x :: xs, y :: ys => (f x y) :: (zipWith f xs ys)
+#eval zipWith (fun x y => (y, x)) lst1 lst2
 
 -- Exercises 1.6.6
+def take {α : Type} : Nat → List α → List α
+  | 0, _ => []
+  | _, [] => []
+  | n, x :: xs => x :: take (n - 1) xs
+#eval take 2 lst1
+
+def drop {α : Type} : Nat → List α → List α
+  | 0, xs => xs
+  | _, [] => []
+  | n, _ :: xs => drop (n - 1) xs
+#eval drop 2 lst1
 
 -- Exercises 1.6.7
+def productsOverSums {α β γ : Type} : α × (β ⊕ γ) → (α × β) ⊕ (α × γ) :=
+  fun p =>
+    match p with
+    | (a, Sum.inl b) => Sum.inl (a, b)
+    | (a, Sum.inr c) => Sum.inr (a, c)
+#eval productsOverSums ("🐱", hajimii[1])
 
 -- Exercises 1.6.8
+def qbitCtrl {α : Type} : Bool × α → α ⊕ α := fun p =>
+  match p with
+  | (true, a) => Sum.inl a -- qbit0 exicited
+  | (false, a) => Sum.inr a -- qbit1 exicited
+#eval qbitCtrl (true, 1)
