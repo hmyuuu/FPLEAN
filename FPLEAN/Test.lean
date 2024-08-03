@@ -396,8 +396,12 @@ def productsOverSums {α β γ : Type} : α × (β ⊕ γ) → (α × β) ⊕ (�
 #eval productsOverSums ("🐱", hajimii[1])
 
 -- Exercises 1.6.8
-def qbitCtrl {α : Type} : Bool × α → α ⊕ α := fun p =>
+def qbitReg {α : Type} : Bool × α → α ⊕ α := fun p =>
   match p with
-  | (true, a) => Sum.inl a -- qbit0 exicited
-  | (false, a) => Sum.inr a -- qbit1 exicited
-#eval qbitCtrl (true, 1)
+  | (true, a) => Sum.inl a -- qbit0 prepared
+  | (false, a) => Sum.inr a -- qbit1 prepared
+#eval qbitReg (true, 1)
+
+-- Automatic Implicit Arguments (same thing as Type Inference, I guess?)
+
+-- Pattern-Matching Def
