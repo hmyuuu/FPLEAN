@@ -405,3 +405,124 @@ def qbitReg {α : Type} : Bool × α → α ⊕ α := fun p =>
 -- Automatic Implicit Arguments (same thing as Type Inference, I guess?)
 
 -- Pattern-Matching Def
+-- We need not name the argument when it's used directly in the `match` expression.
+def fromOption (default : α) : Option α → α
+  | some val => val
+  | none => default
+
+#eval (some "salmonberry").getD ""
+#eval none.getD ""
+
+-- Local Definitions
+-- `let` is used for local definitions, `have` is used for local theorems.
+def unzip : List (α × β) → List α × List β
+  | [] => ([], [])
+  | (x, y) :: xys =>
+    let unzipped : List α × List β := unzip xys
+    (x :: unzipped.fst, y :: unzipped.snd)
+
+  #eval unzip [(1, "one"), (2, "two"), (3, "three")]
+  #check unzip (zip lst1 lst2) 
+
+-- The biggest difference between `let` and `def` is that *recursive let* definitions must be explicitly indicated by writing `let rec``. 
+def reverse (xs : List α) : List α :=
+  let rec helper : List α -> List α -> List α
+    | [], soFar => soFar
+    | y :: ys, soFar => helper ys (y :: soFar)
+  helper xs []
+#eval reverse lst1
+
+-- Type Inferrence
+-- With Lean's type inference, explicit types may be omitted from both top-level definitions (with `def`) and local definitions (with `let`).
+def unzip1 : List (α × β) → List α × List β
+  | [] => ([], [])
+  | (x, y) :: xys =>
+    let unzipped := unzip xys
+    (x :: unzipped.fst, y :: unzipped.snd)
+
+def unzip2 (pairs : List (α × β)) :=
+  match pairs with 
+    | [] => ([], [])
+    | (x, y) :: xys =>
+      let unzipped := unzip xys
+      (x :: unzipped.fst, y :: unzipped.snd)
+
+#check 14 
+#check (14: Int)
+
+-- [metavariable](https://lean-lang.org/functional_programming_in_lean/getting-to-know/polymorphism.html#option)
+def id1 (x : α) : α := x
+def id2 (x : α) := x
+-- def id3 x := x
+
+-- Simultaneous Matching 
+-- matching on multiple values at once
+def mydrop (n : Nat) (xs : List α) : List α :=
+  match n, xs with 
+  | 0, ys => ys
+  | _, [] => []
+  | Nat.succ n , y :: ys => drop n ys
+
+#eval mydrop 2 lst1
+
+-- Natrual Number Patterns 
+def myeven : Nat -> Bool 
+  | 0 => true 
+  | n + 1 => not (even n)
+ 
+#eval myeven 5
+
+def halve : Nat -> Nat
+  | 0 => 0
+  | 1 => 0
+  | n + 2 => halve n + 1
+  -- insted of ` 2 + n` 
+
+#eval halve 5
+
+-- Anonmous Functions 
+-- nothing special,,,
+#eval ( · * 2 + 1) 3
+
+namespace NewNamespace
+def triple (x : Nat) : Nat := 3 * x
+def quadruple (x : Nat) : Nat := 2 * x + 2 * x
+end NewNamespace
+
+#check NewNamespace.quadruple
+
+def timesTwelve (x : Nat) :=
+  open NewNamespace in
+  quadruple (triple x)
+
+open NewNamespace in
+#check quadruple
+
+-- if let 
+inductive Inline : Type where
+  | lineBreak
+  | str : String -> Inline
+  | emph : Inline -> Inline 
+  | strong : Inline -> Inline
+
+def Inline.string? (i : Inline) : Option String :=
+  if let Inline.str s := i then
+    some s 
+  else none
+  -- match i with
+  -- | Inline.str s => some s
+  -- | _ => none
+
+#eval Inline.string? (Inline.str "hello")
+
+
+-- Positional Structure Arguments
+-- #eval ⟨1, 2⟩
+#eval (⟨1, 2⟩ : Point)
+
+-- String Interpolation
+
+#eval s!"three fives is {NewNamespace.triple 5}"
+-- #check s!"three fives is {NewNamespace.triple}"
+-- deriving Repr
+
